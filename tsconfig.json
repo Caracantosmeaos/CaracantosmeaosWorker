@@ -1,0 +1,25 @@
+{
+    "ts-node": {
+      "require": ["tsconfig-paths/register"]
+    },
+    "compilerOptions": {
+      "target": "es6",
+      "module": "commonjs",
+      "outDir": "./dist",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "baseUrl": ".",
+      "paths": {
+        "src*": ["src/*", "src/"],
+        "@services/*": ["src/services/*", "src/services"],
+        "@models/*": ["src/models/*", "src/models"],
+        "@interfaces/*": ["src/interfaces/*", "src/interfaces"],
+        "@controllers/*": ["src/controllers/*", "src/controllers"],
+        "@dtos/*": ["src/dtos/*"],
+      }
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules"]
+}
