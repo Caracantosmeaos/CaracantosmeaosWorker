@@ -1,4 +1,4 @@
-import { IMatchPlayer } from "src/interfaces/matchPlayer.interface"
+import { IMatchPlayer } from "@interfaces/matchPlayer.interface"
 import MatchPlayerDTO from "./matchPlayer.dto"
 
 export default class MatchDTO {

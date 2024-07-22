@@ -1,5 +1,5 @@
-import {IMatch} from "src/interfaces/match.interface"
-import MatchModel from "src/models/match.model"
+import {IMatch} from "@interfaces/match.interface"
+import MatchModel from "@models/match.model"
 
 const insertOne = async (match: IMatch) => {
     var model = new MatchModel(match)

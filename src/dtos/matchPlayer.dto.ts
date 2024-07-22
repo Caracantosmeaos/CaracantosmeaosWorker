@@ -1,4 +1,4 @@
-import { IMatchPlayer } from "src/interfaces/matchPlayer.interface"
+import { IMatchPlayer } from "@interfaces/matchPlayer.interface"
 
 export default class MatchPlayerDTO implements IMatchPlayer{
     playername: string

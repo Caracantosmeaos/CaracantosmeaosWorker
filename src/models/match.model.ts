@@ -1,5 +1,4 @@
-import {Schema, Types, model} from "mongoose"
-import { IMatch } from "@interfaces/match.interface"
+import {Schema, model} from "mongoose"
 
 const matchSchema = new Schema(
     {

@@ -1,9 +1,9 @@
 import { getClubMatchHistory, TPlatformType} from '../../ProClubsAPI';
 import { TGametype } from '../../ProClubsAPI/dist/model/club';
-import { insertMatch, getLatestMatch } from 'src/controllers/match.controller';
+import { insertMatch, getLatestMatch } from '@controllers/match.controller';
 
 import dotenv from "dotenv"
-import { IMatch } from 'srcinterfaces/match.interface';
+import { IMatch } from '@interfaces/match.interface';
 
 dotenv.config()
 const CLUBID:number = Number(process.env.CLUBID) || 290776;
