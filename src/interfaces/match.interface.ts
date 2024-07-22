@@ -6,8 +6,9 @@ export interface IMatch {
     timestamp: number
     result: "loose" | "tie" | "win",
     winnerByDnf: Boolean
-    winnerByPen: Boolean
-    ownClub:{
+    winnerByPen?: Boolean
+    localTeam?: Boolean
+    localClub:{
         id: number
         name: string
         matchStats: {
@@ -21,7 +22,7 @@ export interface IMatch {
         }
         players: IMatchPlayer[]
     },
-    opponentClub:{
+    awayClub:{
         id: number
         name: string
         matchStats: {

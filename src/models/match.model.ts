@@ -27,9 +27,15 @@ const matchSchema = new Schema(
         },
         winnerByPen: {
             type: Boolean,
-            required: true
+            required: false,
+            default: false
         },
-        ownClub: {
+        localTeam: {
+            type: Boolean,
+            required: false,
+            default: true
+        },
+        localClub: {
             id: {
                 type: Number,
                 required: true
@@ -73,7 +79,7 @@ const matchSchema = new Schema(
                 required: true
             }
         },
-        opponentClub: {
+        awayClub: {
             id: {
                 type: Number,
                 required: true

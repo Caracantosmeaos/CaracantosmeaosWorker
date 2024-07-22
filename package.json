@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "build": "tsc",
-    "serve": "node dist/index.js"
+    "serve": "node -r ts-node/register/transpile-only -r tsconfig-paths/register dist/index.js"
   },
   "author": "el_trueno",
   "license": "ISC",

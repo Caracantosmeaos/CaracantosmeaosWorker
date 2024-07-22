@@ -1,14 +1,20 @@
 import { IMatchPlayer } from "@interfaces/matchPlayer.interface"
 import MatchPlayerDTO from "./matchPlayer.dto"
+import dotenv from "dotenv"
+import { IMatch } from "srcinterfaces/match.interface";
 
-export default class MatchDTO {
+dotenv.config()
+const CLUBID:number = Number(process.env.CLUBID) || 290776;
+
+export default class MatchDTO implements IMatch{
     matchId: number
     matchType: "league" | "playoff" = "league"
     timestamp: number
     result: "loose" | "tie" | "win"
     winnerByDnf: Boolean
-    winnerByPen: Boolean = false
-    ownClub:{
+    winnerByPen?: Boolean = false
+    localTeam?: Boolean
+    localClub:{
         id: number
         name: string
         matchStats: {
@@ -22,7 +28,7 @@ export default class MatchDTO {
         }
         players: IMatchPlayer[]
     }
-    opponentClub:{
+    awayClub:{
         id: number
         name: string
         matchStats: {
@@ -42,58 +48,65 @@ export default class MatchDTO {
         this.timestamp = rawdata.timestamp
         this.matchType = rawdata.matchType ?? "league"
 
-        const rawdataOwnClub = rawdata.clubs[Object.keys(rawdata.clubs)[0]]
-        const rawdataAggregateOwn = rawdata.aggregate[Object.keys(rawdata.clubs)[0]]
-        const rawdataRivalClub = rawdata.clubs[Object.keys(rawdata.clubs)[1]]
-        const rawdataAggregateOpponent = rawdata.aggregate[Object.keys(rawdata.clubs)[1]]
-
-        this.winnerByDnf = Boolean(Number(rawdataOwnClub.winnerByDnf) || Number(rawdataRivalClub.winnerByDnf))
-        if(Number(rawdataOwnClub.losses)==1){
+        const ownClubID:string = CLUBID.toString()
+        let opponentClubID:string = "";
+        for(var c in rawdata.clubs){
+            if(c.toString()!=ownClubID) opponentClubID = c.toString();
+        }
+        this.localTeam = (Object.keys(rawdata.clubs)[0].toString()===ownClubID)
+        this.winnerByDnf = Boolean(Number(rawdata.clubs[Object.keys(rawdata.clubs)[0]].winnerByDnf) 
+        || Number(rawdata.clubs[Object.keys(rawdata.clubs)[1]].winnerByDnf))
+        if(Number(rawdata.clubs[ownClubID].losses)==1){
             this.result = "loose"
-        }else if(Number(rawdataOwnClub.ties)==1){
+        }else if(Number(rawdata.clubs[ownClubID].ties)==1){
             this.result = "tie"
         }else this.result = "win"
 
-        const rawdataOwnPlayers =  rawdata.players[Object.keys(rawdata.players)[0]]
-        let ownClubPlayers:Array<IMatchPlayer> = []
-        for(var rawdataPl in rawdataOwnPlayers) {
-            var parsedPl = new MatchPlayerDTO(rawdataOwnPlayers[rawdataPl])
-            ownClubPlayers.push(parsedPl)
+        const rawdataLocalClub = rawdata.clubs[this.localTeam ? ownClubID : opponentClubID]
+        const rawdataAggregateLocal = rawdata.aggregate[this.localTeam ? ownClubID : opponentClubID]
+        const rawdataAwayClub = rawdata.clubs[this.localTeam ? opponentClubID : ownClubID]
+        const rawdataAggregateAway = rawdata.aggregate[this.localTeam ? opponentClubID : ownClubID]
+
+        const rawdataLocalPlayers =  rawdata.players[this.localTeam ? ownClubID : opponentClubID]
+        let localClubPlayers:Array<IMatchPlayer> = []
+        for(var rawdataPl in rawdataLocalPlayers) {
+            var parsedPl = new MatchPlayerDTO(rawdataLocalPlayers[rawdataPl])
+            localClubPlayers.push(parsedPl)
         }
-        this.ownClub = {
-            id: rawdataOwnClub.details.clubId,
-            name: rawdataOwnClub.details.name,
+        this.localClub = {
+            id: rawdataLocalClub.details.clubId,
+            name: rawdataLocalClub.details.name,
             matchStats: {
-                goals: rawdataOwnClub.goals,
-                shots: rawdataAggregateOwn.shots,
-                passesMade: rawdataAggregateOwn.passattempts,
-                passesSuccess: rawdataAggregateOwn.passesmade,
-                redCards: rawdataAggregateOwn.redcards,
-                tacklesMade: rawdataAggregateOwn.tackleattempts,
-                tackleSuccess: rawdataAggregateOwn.tacklesmade,
+                goals: rawdataLocalClub.goals,
+                shots: rawdataAggregateLocal.shots,
+                passesMade: rawdataAggregateLocal.passattempts,
+                passesSuccess: rawdataAggregateLocal.passesmade,
+                redCards: rawdataAggregateLocal.redcards,
+                tacklesMade: rawdataAggregateLocal.tackleattempts,
+                tackleSuccess: rawdataAggregateLocal.tacklesmade,
             },
-            players: ownClubPlayers
+            players: localClubPlayers
         }
 
-        const rawdataOpponentPlayers =  rawdata.players[Object.keys(rawdata.players)[0]]
-        let opponentClubPlayers:Array<IMatchPlayer> = []
-        for(var rawdataPl in rawdataOpponentPlayers) {
-            var parsedPl = new MatchPlayerDTO(rawdataOpponentPlayers[rawdataPl])
-            opponentClubPlayers.push(parsedPl)
+        const rawdataAwayPlayers =  rawdata.players[this.localTeam ? opponentClubID : ownClubID]
+        let awayClubPlayers:Array<IMatchPlayer> = []
+        for(var rawdataPl in rawdataAwayPlayers) {
+            var parsedPl = new MatchPlayerDTO(rawdataAwayPlayers[rawdataPl])
+            awayClubPlayers.push(parsedPl)
         }
-        this.opponentClub = {
-            id: rawdataRivalClub.details.clubId,
-            name: rawdataRivalClub.details.name,
+        this.awayClub = {
+            id: rawdataAwayClub.details.clubId,
+            name: rawdataAwayClub.details.name,
             matchStats: {
-                goals: rawdataRivalClub.goals,
-                shots: rawdataAggregateOpponent.shots,
-                passesMade: rawdataAggregateOpponent.passattempts,
-                passesSuccess: rawdataAggregateOpponent.passesmade,
-                redCards: rawdataAggregateOpponent.redcards,
-                tacklesMade: rawdataAggregateOpponent.tackleattempts,
-                tackleSuccess: rawdataAggregateOpponent.tacklesmade,
+                goals: rawdataAwayClub.goals,
+                shots: rawdataAggregateAway.shots,
+                passesMade: rawdataAggregateAway.passattempts,
+                passesSuccess: rawdataAggregateAway.passesmade,
+                redCards: rawdataAggregateAway.redcards,
+                tacklesMade: rawdataAggregateAway.tackleattempts,
+                tackleSuccess: rawdataAggregateAway.tacklesmade,
             },
-            players: opponentClubPlayers
+            players: awayClubPlayers
         }
     }
 }
