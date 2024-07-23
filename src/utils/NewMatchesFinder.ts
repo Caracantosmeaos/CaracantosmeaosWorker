@@ -52,7 +52,7 @@ function startWorker(){
                     match.matchType = "playoff"
                     await insertMatch(match)
                 }
-                console.log(`[Match Finder Worker] Inserted ${leagueMatches.length} new matches`)
+                console.log(`[Match Finder Worker] Inserted ${leagueMatches.length + playoffMatches.length} new matches`)
             }
         }catch(e){
             var msg:string
