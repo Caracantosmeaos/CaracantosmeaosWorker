@@ -1,5 +1,5 @@
 import axios from 'axios';
-import webhooksdb from '../../webhooks.json'
+import webhooksdb from '../webhooks.json'
 import { IMatch } from 'srcinterfaces/match.interface';
 
 
