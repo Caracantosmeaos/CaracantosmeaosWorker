@@ -23,13 +23,6 @@ function startWorker(){
                 let matchesToInsert:Array<any> = []
                 for(let m in leagueMatches){
                     const match:any = leagueMatches[m]
-                    /**
-                     * TEST ONLY
-                     */
-                    emitNewMatch(match)
-                    /**
-                     * NED OF TET
-                     */
                     if(match.timestamp >= latestDbMatch.timestamp && Number(match.matchId)!==latestDbMatch.matchId){
                         match.matchType = "league"
                         matchesToInsert.push(match)
