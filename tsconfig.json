@@ -18,7 +18,10 @@
         "@interfaces/*": ["src/interfaces/*", "src/interfaces"],
         "@controllers/*": ["src/controllers/*", "src/controllers"],
         "@dtos/*": ["src/dtos/*"],
-      }
+        "@config/*": ["src/config/*"],
+      },
+      "resolveJsonModule": true,
+      "moduleResolution": "node"
     },
     "include": ["src/**/*.ts"],
     "exclude": ["node_modules"]
