@@ -5,6 +5,7 @@ import { IMatch } from '@interfaces/match.interface';
 import { emitNewMatch } from 'src/utils/WeebhookEmitter'
 
 import dotenv from "dotenv"
+import MatchDTO from 'srcdtos/match.dto';
 dotenv.config()
 const CLUBID:number = Number(process.env.CLUBID) || 290776;
 const PLATFORM:string = String(process.env.PLATFORM || 'common-gen5')
@@ -21,12 +22,19 @@ function startWorker(){
             const latestDbMatch:IMatch|undefined = (resp && resp.length>0) ? <IMatch>resp[0] : undefined
             if(latestDbMatch!==undefined){
                 let matchesToInsert:Array<any> = []
+                /*TEST*/ //let e = true
                 for(let m in leagueMatches){
                     const match:any = leagueMatches[m]
                     if(match.timestamp >= latestDbMatch.timestamp && Number(match.matchId)!==latestDbMatch.matchId){
                         match.matchType = "league"
                         matchesToInsert.push(match)
                     }
+                    /*TEST*//*
+                    if(e){
+                        emitNewMatch(new MatchDTO(match))
+                        e = false
+                    }*/
+    
                 }
                 for(let m in playoffMatches){
                     const match:any = playoffMatches[m]
@@ -37,7 +45,7 @@ function startWorker(){
                 }
                 for(let match in matchesToInsert){
                     await insertMatch(matchesToInsert[match])
-                    emitNewMatch(matchesToInsert[match])
+                    emitNewMatch(new MatchDTO(matchesToInsert[match]))
                 }
                 if(matchesToInsert.length>0){
                     if(matchesToInsert.length>1) console.info(`[Match Finder Worker] Inserted ${matchesToInsert.length} new matches`)

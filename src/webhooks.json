@@ -1,5 +1,5 @@
 {
     "newmatch":[
-        "https://webhook.url/"
+        "http://localhost:80/webhook/newmatch"
     ]
 }

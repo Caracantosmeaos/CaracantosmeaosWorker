@@ -11,12 +11,12 @@ export const emitNewMatch = async (match:IMatch) =>{
     };
     
     for(var url in urls){
-      axios.post(urls[url], data)
+      await axios.post(urls[url], data)
       .then(response => {
-        console.info("[Webhook emitter] New match webhook event emitted")
+        console.info("[Webhook emitter] New match webhook event emitted to "+urls[url])
       })
       .catch(error => {
-        console.error(error);
+        console.error("[Webhook emitter] Error sending webhook to "+urls[url]);
       });
     }
 }
