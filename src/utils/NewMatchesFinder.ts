@@ -29,12 +29,6 @@ function startWorker(){
                         match.matchType = "league"
                         matchesToInsert.push(match)
                     }
-                    /*TEST*//*
-                    if(e){
-                        emitNewMatch(new MatchDTO(match))
-                        e = false
-                    }*/
-    
                 }
                 for(let m in playoffMatches){
                     const match:any = playoffMatches[m]
@@ -45,7 +39,7 @@ function startWorker(){
                 }
                 for(let match in matchesToInsert){
                     await insertMatch(matchesToInsert[match])
-                    emitNewMatch(new MatchDTO(matchesToInsert[match]))
+                    await emitNewMatch(new MatchDTO(matchesToInsert[match]))
                 }
                 if(matchesToInsert.length>0){
                     if(matchesToInsert.length>1) console.info(`[Match Finder Worker] Inserted ${matchesToInsert.length} new matches`)
