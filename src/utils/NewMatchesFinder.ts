@@ -1,7 +1,9 @@
-import { getClubMatchHistory, TPlatformType} from '../../ProClubsAPI';
+import { getClubMatchHistory, TPlatformType, getClubMembers} from '../../ProClubsAPI';
 import { TGametype } from '../../ProClubsAPI/dist/model/club';
 import { insertMatch, getLatestMatch } from '@controllers/match.controller';
+import { updateMember } from 'srccontrollers/clubMember.controller';
 import { IMatch } from '@interfaces/match.interface';
+import { IClubMember } from 'srcinterfaces/clubMember.interface';
 import { emitNewMatch } from 'src/utils/WeebhookEmitter'
 
 import dotenv from "dotenv"
@@ -22,7 +24,6 @@ function startWorker(){
             const latestDbMatch:IMatch|undefined = (resp && resp.length>0) ? <IMatch>resp[0] : undefined
             if(latestDbMatch!==undefined){
                 let matchesToInsert:Array<any> = []
-                /*TEST*/ //let e = true
                 for(let m in leagueMatches){
                     const match:any = leagueMatches[m]
                     if(match.timestamp >= latestDbMatch.timestamp && Number(match.matchId)!==latestDbMatch.matchId){
@@ -44,6 +45,15 @@ function startWorker(){
                 if(matchesToInsert.length>0){
                     if(matchesToInsert.length>1) console.info(`[Match Finder Worker] Inserted ${matchesToInsert.length} new matches`)
                     else console.info(`[Match Finder Worker] Inserted 1 new match`)
+
+                    const EaMembers = await getClubMembers(<TPlatformType>PLATFORM, CLUBID);
+                    if(EaMembers!=undefined){
+                        console.info("[Member Worker] Updating members...")
+                        for(let member in EaMembers){
+                            await updateMember(EaMembers[member])
+                        }
+                        console.info("[Member Worker] Members updated")
+                    }
                 }
             }else{
                 console.info("[Match Finder Worker] No matches founded in database. Inserting all retrieved matches from EA API...")
@@ -58,6 +68,15 @@ function startWorker(){
                     await insertMatch(match)
                 }
                 console.info(`[Match Finder Worker] Inserted ${leagueMatches.length + playoffMatches.length} new matches`)
+                
+                const EaMembers = await getClubMembers(<TPlatformType>PLATFORM, CLUBID);
+                if(EaMembers!=undefined){
+                    console.info("[Member Worker] Updating members...")
+                    for(let member in EaMembers){
+                        await updateMember(EaMembers[member])
+                    }
+                    console.info("[Member Worker] Members updated")
+                }
             }
         }catch(e){
             var msg:string
