@@ -5,9 +5,11 @@ import { updateMember } from 'srccontrollers/clubMember.controller';
 import { IMatch } from '@interfaces/match.interface';
 import { IClubMember } from 'srcinterfaces/clubMember.interface';
 import { emitNewMatch } from 'src/utils/WeebhookEmitter'
+import { checkMemberAchievement } from './achievementChecker';
 
 import dotenv from "dotenv"
 import MatchDTO from 'srcdtos/match.dto';
+import ClubMemberDTO from 'srcdtos/clubMember.dto';
 dotenv.config()
 const CLUBID:number = Number(process.env.CLUBID) || 290776;
 const PLATFORM:string = String(process.env.PLATFORM || 'common-gen5')
@@ -73,6 +75,8 @@ function startWorker(){
                 if(EaMembers!=undefined){
                     console.info("[Member Worker] Updating members...")
                     for(let member in EaMembers){
+                        let clubMember = new ClubMemberDTO(EaMembers[member])
+                        await checkMemberAchievement(clubMember)
                         await updateMember(EaMembers[member])
                     }
                     console.info("[Member Worker] Members updated")
@@ -82,6 +86,7 @@ function startWorker(){
             var msg:string
             msg = e=="ERROR_INSERT_MATCH" ? "Error inserting match into database" : ""
             msg = e=="ERROR_FINDING_LATEST_MATCHES" ? "Error searching for newer matches" : ""
+            msg = e=="ERROR_UPDATING_MEMBER" ? "Error updating member" : ""
             console.log(msg)
         }
     },WORKER_INTERVAL * 1000)
