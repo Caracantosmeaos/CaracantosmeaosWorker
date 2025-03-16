@@ -1,5 +1,8 @@
 {
     "newmatch":[
         "http://localhost:80/webhook/newmatch"
+    ],
+    "memberachievement":[
+        "http://localhost:80/webhook/memberachievement"
     ]
 }
