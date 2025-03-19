@@ -38,13 +38,22 @@ export default class ClubMemberDTO implements IClubMember{
         this.cleanSheetsGK = Number(rawdata.cleanSheetsGK)
         this.ratingAve = Number(rawdata.ratingAve)
         let shotSuccessRate = Number(rawdata.shotSuccessRate)
-        this.shots = Math.round((shotSuccessRate*this.goals)/100)
+        this.shots = Math.round(this.goals / (shotSuccessRate / 100))
+        if(Number.isNaN(this.shots)){
+            this.shots = 0
+        }
         let passSucessRate = Number(rawdata.passSuccessRate)
         this.passesMade = Number(rawdata.passesMade)
-        this.passesSuccess = Math.round((passSucessRate*this.passesMade)/100)
+        this.passesSuccess = Math.round(passSucessRate*(this.passesMade/100))
+        if(Number.isNaN(this.passesSuccess)){
+            this.passesMade = 0
+        }
         this.tacklesMade = Number(rawdata.tacklesMade)
         let tackleSuccessRate = Number(rawdata.tackleSuccessRate)
-        this.tacklesSuccess = Math.round((tackleSuccessRate*this.tacklesMade)/100)
+        this.tacklesSuccess = Math.round(tackleSuccessRate*(this.tacklesMade/100))
+        if(Number.isNaN(this.tacklesSuccess)){
+            this.tacklesMade = 0
+        }
         this.redCards = Number(rawdata.redCards)
     }
 

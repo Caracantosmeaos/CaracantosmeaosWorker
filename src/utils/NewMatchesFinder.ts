@@ -16,8 +16,24 @@ const PLATFORM:string = String(process.env.PLATFORM || 'common-gen5')
 const WORKER_INTERVAL = Number(process.env.WORKER_INTERVAL) || 300;
 
 
+async function updateMembers(){
+    const EaMembers = await getClubMembers(<TPlatformType>PLATFORM, CLUBID);
+    if(EaMembers!=undefined){
+        console.info("[Member Worker] Updating members...")
+        for(let member in EaMembers){
+            let clubMember = new ClubMemberDTO(EaMembers[member])
+            await checkMemberAchievement(clubMember)
+            await updateMember(EaMembers[member])
+        }
+        console.info("[Member Worker] Members updated")
+    }else console.info("[Member Worker] Member fetch failed")
+}
+
 function startWorker(){
     console.log("[Match Finder Worker] Started!")
+
+    updateMembers()
+
     setInterval(async function(){
         try{
             const leagueMatches = await getClubMatchHistory(<TPlatformType>PLATFORM, CLUBID, <TGametype>"leagueMatch") ?? [];
@@ -47,15 +63,7 @@ function startWorker(){
                 if(matchesToInsert.length>0){
                     if(matchesToInsert.length>1) console.info(`[Match Finder Worker] Inserted ${matchesToInsert.length} new matches`)
                     else console.info(`[Match Finder Worker] Inserted 1 new match`)
-
-                    const EaMembers = await getClubMembers(<TPlatformType>PLATFORM, CLUBID);
-                    if(EaMembers!=undefined){
-                        console.info("[Member Worker] Updating members...")
-                        for(let member in EaMembers){
-                            await updateMember(EaMembers[member])
-                        }
-                        console.info("[Member Worker] Members updated")
-                    }
+                    await updateMembers()
                 }
             }else{
                 console.info("[Match Finder Worker] No matches founded in database. Inserting all retrieved matches from EA API...")
@@ -71,16 +79,7 @@ function startWorker(){
                 }
                 console.info(`[Match Finder Worker] Inserted ${leagueMatches.length + playoffMatches.length} new matches`)
                 
-                const EaMembers = await getClubMembers(<TPlatformType>PLATFORM, CLUBID);
-                if(EaMembers!=undefined){
-                    console.info("[Member Worker] Updating members...")
-                    for(let member in EaMembers){
-                        let clubMember = new ClubMemberDTO(EaMembers[member])
-                        await checkMemberAchievement(clubMember)
-                        await updateMember(EaMembers[member])
-                    }
-                    console.info("[Member Worker] Members updated")
-                }
+                await updateMembers()
             }
         }catch(e){
             var msg:string
