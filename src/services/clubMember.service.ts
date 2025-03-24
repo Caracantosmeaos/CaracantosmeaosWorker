@@ -1,12 +1,29 @@
 import {IClubMember} from "@interfaces/clubMember.interface"
 import MemberModel from "@models/clubMember.model"
+import { IClubMemberAchievement } from "srcinterfaces/clubMemberAchievement.interface"
+import { checkMemberAchievements } from "srcutils/achievementChecker"
 
 
 const updateOne = async (member: IClubMember) => {
-    //var model = new MemberModel(member)
     const response = await MemberModel.updateOne({playerName: member.playerName}, member, {upsert: true})
     return response
 }
 
+const updateOneProcessingAchievements = async (member: IClubMember) => {
+    const actualMember = await MemberModel.findOne({playerName: member.playerName})
+    if (!actualMember){
+        return await MemberModel.updateOne({playerName: member.playerName}, member, {upsert: true})
+    }
 
-export {updateOne}
+    const newAchievements:IClubMemberAchievement[] = await checkMemberAchievements(member)
+
+    //Save new achievements
+    if(newAchievements.length>0){
+        actualMember.achievements.push(...newAchievements)
+        return await actualMember.save()
+    }
+    
+}
+
+
+export {updateOne, updateOneProcessingAchievements}

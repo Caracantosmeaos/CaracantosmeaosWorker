@@ -1,3 +1,5 @@
+import { IClubMemberAchievement } from "./clubMemberAchievement.interface"
+
 export interface IClubMember {
     playerName: string
     proName: string
@@ -19,4 +21,5 @@ export interface IClubMember {
     tacklesMade: number
     tacklesSuccess: number
     redCards: number
+    achievements: IClubMemberAchievement[]
 }

@@ -1,4 +1,5 @@
 import { IClubMember } from "@interfaces/clubMember.interface"
+import { IClubMemberAchievement } from "srcinterfaces/clubMemberAchievement.interface"
 
 export default class ClubMemberDTO implements IClubMember{
     playerName: string
@@ -21,6 +22,7 @@ export default class ClubMemberDTO implements IClubMember{
     tacklesMade: number
     tacklesSuccess: number
     redCards: number
+    achievements: IClubMemberAchievement[] = []
 
     constructor(rawdata?: any){
         this.playerName = rawdata.name,
@@ -46,13 +48,13 @@ export default class ClubMemberDTO implements IClubMember{
         this.passesMade = Number(rawdata.passesMade)
         this.passesSuccess = Math.round(passSucessRate*(this.passesMade/100))
         if(Number.isNaN(this.passesSuccess)){
-            this.passesMade = 0
+            this.passesSuccess = 0
         }
         this.tacklesMade = Number(rawdata.tacklesMade)
         let tackleSuccessRate = Number(rawdata.tackleSuccessRate)
         this.tacklesSuccess = Math.round(tackleSuccessRate*(this.tacklesMade/100))
         if(Number.isNaN(this.tacklesSuccess)){
-            this.tacklesMade = 0
+            this.tacklesSuccess = 0
         }
         this.redCards = Number(rawdata.redCards)
     }

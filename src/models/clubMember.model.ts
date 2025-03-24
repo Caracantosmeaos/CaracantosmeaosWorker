@@ -1,5 +1,13 @@
 import {Schema, model} from "mongoose"
 import { IClubMember } from "@interfaces/clubMember.interface"
+import { IClubMemberAchievement } from "srcinterfaces/clubMemberAchievement.interface"
+
+const ClubMemberAchievementSchema = new Schema<IClubMemberAchievement>({
+    type: { type: String, 
+        enum: ["played" , "goals" , "assists" , "redcards" , "passes" , "motm"], 
+        required: true },
+    reached: { type: Number, required: true }
+});
 
 const clubMemberSchema = new Schema<IClubMember>(
     {
@@ -85,6 +93,7 @@ const clubMemberSchema = new Schema<IClubMember>(
             type: Number,
             required: true
         },
+        achievements: [ClubMemberAchievementSchema]
     },
     {
         timestamps: true,

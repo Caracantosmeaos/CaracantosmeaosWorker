@@ -1,39 +1,38 @@
 import { IClubMember } from "@interfaces/clubMember.interface";
-import { ClubMemberAchievement } from "srctypes/clubMemberAchievement.type";
+import { IClubMemberAchievement } from "@interfaces/clubMemberAchievement.interface";
 import { emitMemberAchievement } from "./WeebhookEmitter";
 
-export const checkMemberAchievement = async (member: IClubMember) => {
-    let achievement:ClubMemberAchievement = {
-        player: member,
-        type: "played",
-        reached: 0
-    }
-    if(member.gamesPlayed%50==0){
-        achievement.type = "played"
-        achievement.reached = member.gamesPlayed
-    }
-    if(member.goals%25==0){
-        achievement.type = "goals"
-        achievement.reached = member.goals
-    }
-    if(member.assists%25==0){
-        achievement.type = "assists"
-        achievement.reached = member.assists
-    }
-    if(member.redCards%10==0){
-        achievement.type = "redcards"
-        achievement.reached = member.redCards
-    }
-    if(member.passesMade%50==0){
-        achievement.type = "passes"
-        achievement.reached = member.passesMade
-    }
-    if(member.manOfTheMatch%10==0){
-        achievement.type = "motm"
-        achievement.reached = member.manOfTheMatch
+export const checkMemberAchievements = async (member: IClubMember) => {
+    const actualAchievements:IClubMemberAchievement[] = member.achievements || []
+    
+    let newAchievements:IClubMemberAchievement[] = []
+
+    const achievementTypes: { type: "played" | "goals" | "goals" | "assists" | "redcards" | "passes" | "motm"; step: number; current: number }[] = [
+        { type: "played", step: 50, current: member.gamesPlayed },
+        { type: "goals", step: 25, current: member.goals },
+        { type: "assists", step: 25, current: member.assists },
+        { type: "redcards", step: 10, current: member.redCards },
+        { type: "passes", step: 500, current: member.passesMade },
+        { type: "motm", step: 10, current: member.manOfTheMatch }
+    ];
+
+    for (const { type, step, current } of achievementTypes) {
+        /**Thanks Chat GPT for the logic clue :D */
+        const lastAchievs = actualAchievements.filter(a => a.type === type);
+        const lastReached = lastAchievs.length > 0 ? Math.max(...lastAchievs.map(a => a.reached)) : 0;
+
+        if (current >= lastReached + step) {
+            const newAch:IClubMemberAchievement = {
+                player: member,
+                type: type,
+                reached: Math.floor(current / step) * step
+            }
+            /** WEBHOOK EMIT **/
+            await emitMemberAchievement(newAch)
+
+            newAchievements.push(newAch)
+        }
     }
 
-    if(achievement.reached>0){
-        await emitMemberAchievement(achievement)
-    }
+    return newAchievements
 }

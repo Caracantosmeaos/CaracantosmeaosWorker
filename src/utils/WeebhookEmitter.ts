@@ -1,7 +1,7 @@
 import axios from 'axios';
 import webhooksdb from '../webhooks.json'
 import { IMatch } from 'srcinterfaces/match.interface';
-import { ClubMemberAchievement } from 'srctypes/clubMemberAchievement.type';
+import {IClubMemberAchievement} from '@interfaces/clubMemberAchievement.interface'
 
 
 export const emitNewMatch = async (match:IMatch) =>{
@@ -22,7 +22,7 @@ export const emitNewMatch = async (match:IMatch) =>{
     }
 }
 
-export const emitMemberAchievement = async (ach:ClubMemberAchievement) =>{
+export const emitMemberAchievement = async (ach:IClubMemberAchievement) =>{
   const urls:string[] = webhooksdb.memberachievement;
 
   const data = {

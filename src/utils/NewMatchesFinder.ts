@@ -3,9 +3,7 @@ import { TGametype } from '../../ProClubsAPI/dist/model/club';
 import { insertMatch, getLatestMatch } from '@controllers/match.controller';
 import { updateMember } from 'srccontrollers/clubMember.controller';
 import { IMatch } from '@interfaces/match.interface';
-import { IClubMember } from 'srcinterfaces/clubMember.interface';
 import { emitNewMatch } from 'src/utils/WeebhookEmitter'
-import { checkMemberAchievement } from './achievementChecker';
 
 import dotenv from "dotenv"
 import MatchDTO from 'srcdtos/match.dto';
@@ -22,7 +20,7 @@ async function updateMembers(){
         console.info("[Member Worker] Updating members...")
         for(let member in EaMembers){
             let clubMember = new ClubMemberDTO(EaMembers[member])
-            await checkMemberAchievement(clubMember)
+            //await checkMemberAchievement(clubMember)
             await updateMember(EaMembers[member])
         }
         console.info("[Member Worker] Members updated")
