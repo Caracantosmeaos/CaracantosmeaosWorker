@@ -21,7 +21,7 @@ export const checkMemberAchievements = async (member: IClubMember) => {
         const lastAchievs = actualAchievements.filter(a => a.type === type);
         const lastReached = lastAchievs.length > 0 ? Math.max(...lastAchievs.map(a => a.reached)) : 0;
 
-        if (current >= lastReached + step) {
+        if (current >= (lastReached + step)) {
             const newAch:IClubMemberAchievement = {
                 player: member,
                 type: type,

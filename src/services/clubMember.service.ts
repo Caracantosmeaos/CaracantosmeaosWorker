@@ -11,11 +11,12 @@ const updateOne = async (member: IClubMember) => {
 
 const updateOneProcessingAchievements = async (member: IClubMember) => {
     const actualMember = await MemberModel.findOne({playerName: member.playerName})
+
     if (!actualMember){
         return await MemberModel.updateOne({playerName: member.playerName}, member, {upsert: true})
     }
 
-    const newAchievements:IClubMemberAchievement[] = await checkMemberAchievements(member)
+    const newAchievements:IClubMemberAchievement[] = await checkMemberAchievements(actualMember)
 
     //Save new achievements
     if(newAchievements.length>0){
