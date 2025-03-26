@@ -15,14 +15,21 @@ const updateOneProcessingAchievements = async (member: IClubMember) => {
     if (!actualMember){
         return await MemberModel.updateOne({playerName: member.playerName}, member, {upsert: true})
     }
+    
 
     const newAchievements:IClubMemberAchievement[] = await checkMemberAchievements(actualMember)
+
+    const { achievements, ...rest } = member;
+    for (const key in rest) {
+        (actualMember as any)[key] = (rest as any)[key];
+    }
 
     //Save new achievements
     if(newAchievements.length>0){
         actualMember.achievements.push(...newAchievements)
-        return await actualMember.save()
     }
+
+    return await actualMember.save()
     
 }
 

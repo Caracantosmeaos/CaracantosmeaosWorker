@@ -7,7 +7,7 @@ export const checkMemberAchievements = async (member: IClubMember) => {
     
     let newAchievements:IClubMemberAchievement[] = []
 
-    const achievementTypes: { type: "played" | "goals" | "goals" | "assists" | "redcards" | "passes" | "motm"; step: number; current: number }[] = [
+    const achievementTypes: { type: "played" | "goals" | "assists" | "redcards" | "passes" | "motm"; step: number; current: number }[] = [
         { type: "played", step: 50, current: member.gamesPlayed },
         { type: "goals", step: 25, current: member.goals },
         { type: "assists", step: 25, current: member.assists },
