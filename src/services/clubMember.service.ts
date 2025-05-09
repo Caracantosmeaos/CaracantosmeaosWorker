@@ -17,12 +17,13 @@ const updateOneProcessingAchievements = async (member: IClubMember) => {
     }
     
 
-    const newAchievements:IClubMemberAchievement[] = await checkMemberAchievements(actualMember)
-
+    //Asign new properties excepting achievements (is empty)
     const { achievements, ...rest } = member;
     for (const key in rest) {
         (actualMember as any)[key] = (rest as any)[key];
     }
+
+    const newAchievements:IClubMemberAchievement[] = await checkMemberAchievements(actualMember)
 
     //Save new achievements
     if(newAchievements.length>0){
