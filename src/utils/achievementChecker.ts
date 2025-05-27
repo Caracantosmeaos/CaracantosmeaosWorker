@@ -1,6 +1,7 @@
 import { IClubMember } from "@interfaces/clubMember.interface";
 import { IClubMemberAchievement } from "@interfaces/clubMemberAchievement.interface";
 import { emitMemberAchievement } from "./WeebhookEmitter";
+import { getAchievementProducer} from "@events/index"
 
 export const checkMemberAchievements = async (member: IClubMember) => {
     const actualAchievements:IClubMemberAchievement[] = member.achievements || []
@@ -28,7 +29,10 @@ export const checkMemberAchievements = async (member: IClubMember) => {
                 reached: Math.floor(current / step) * step
             }
             /** WEBHOOK EMIT **/
-            await emitMemberAchievement(newAch)
+            //await emitMemberAchievement(newAch)
+
+            /** PUBLISH TO RABBITMQ **/
+            await getAchievementProducer().publish(newAch)
 
             newAchievements.push(newAch)
         }

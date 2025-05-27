@@ -19,6 +19,7 @@
         "@controllers/*": ["src/controllers/*", "src/controllers"],
         "@dtos/*": ["src/dtos/*"],
         "@config/*": ["src/config/*"],
+        "@events/*": ["src/events/*"]
       },
       "resolveJsonModule": true,
       "moduleResolution": "node"

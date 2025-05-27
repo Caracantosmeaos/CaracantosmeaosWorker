@@ -4,6 +4,7 @@ import { insertMatch, getLatestMatch } from '@controllers/match.controller';
 import { updateMember } from 'srccontrollers/clubMember.controller';
 import { IMatch } from '@interfaces/match.interface';
 import { emitNewMatch } from 'src/utils/WeebhookEmitter'
+import { getMatchProducer} from "@events/index"
 
 import dotenv from "dotenv"
 import MatchDTO from 'srcdtos/match.dto';
@@ -56,7 +57,10 @@ function startWorker(){
                 }
                 for(let match in matchesToInsert){
                     await insertMatch(matchesToInsert[match])
-                    await emitNewMatch(new MatchDTO(matchesToInsert[match]))
+                    /** WEBHOOK **/
+                    //await emitNewMatch(new MatchDTO(matchesToInsert[match]))
+                    /** RABBITMQ **/
+                    await getMatchProducer().publish(new MatchDTO(matchesToInsert[match]))
                 }
                 if(matchesToInsert.length>0){
                     if(matchesToInsert.length>1) console.info(`[Match Finder Worker] Inserted ${matchesToInsert.length} new matches`)
